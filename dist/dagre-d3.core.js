@@ -425,6 +425,7 @@ if (!d3) {
 module.exports = d3;
 
 },{"d3":undefined}],8:[function(require,module,exports){
+// eslint-disable-next-line no-redeclare
 /* global window */
 
 var dagre;
@@ -444,6 +445,7 @@ if (!dagre) {
 module.exports = dagre;
 
 },{"dagre":undefined}],9:[function(require,module,exports){
+// eslint-disable-next-line no-redeclare
 /* global window */
 
 var graphlib;
@@ -821,6 +823,7 @@ function processEscapeSequences(text) {
 }
 
 },{"../util":27}],21:[function(require,module,exports){
+// eslint-disable-next-line no-redeclare
 /* global window */
 
 var lodash;
@@ -936,6 +939,7 @@ var _ = require("./lodash");
 var d3 = require("./d3");
 var layout = require("./dagre").layout;
 
+
 module.exports = render;
 
 // This design is based on http://bost.ocks.org/mike/chart/.
@@ -949,26 +953,45 @@ function render() {
   var positionClusters = require("./position-clusters");
   var shapes = require("./shapes");
   var arrows = require("./arrows");
+  var dagre = require("./dagre");
 
-  var fn = function(svg, g) {
-    preProcessGraph(g);
+
+  var fn = function(svg, g, opts) {
+
+    var time = opts && opts.debugTiming ? dagre.util.time : dagre.util.notime;
+
+    console.log('prepocessing graph...');
+
+    time("prepocessing graph", () => preProcessGraph(g));
+
 
     var outputGroup = createOrSelectGroup(svg, "output");
+    console.log('output group done...');
+
     var clustersGroup = createOrSelectGroup(outputGroup, "clusters");
+    console.log('cluster group done...');
+
     var edgePathsGroup = createOrSelectGroup(outputGroup, "edgePaths");
+    console.log('edge path group done...');
+
     var edgeLabels = createEdgeLabels(createOrSelectGroup(outputGroup, "edgeLabels"), g);
+    console.log('edge labels done...');
+
     var nodes = createNodes(createOrSelectGroup(outputGroup, "nodes"), g, shapes);
+    console.log('node creation done...');
 
-    layout(g);
 
-    positionNodes(nodes, g);
-    positionEdgeLabels(edgeLabels, g);
-    createEdgePaths(edgePathsGroup, g, arrows);
+    time("layout", ()=>layout(g));
+
+    time("positioning nodes", () => positionNodes(nodes, g));
+    time("positioning, edge labels", () => positionEdgeLabels(edgeLabels, g));
+    time("create edge path", () => createEdgePaths(edgePathsGroup, g, arrows));
 
     var clusters = createClusters(clustersGroup, g);
-    positionClusters(clusters, g);
+    time("positionClusters", () =>positionClusters(clusters, g));
 
-    postProcessGraph(g);
+
+    time("postprocessing graph", () => postProcessGraph(g));
   };
 
   fn.createNodes = function(value) {
@@ -1241,7 +1264,7 @@ function applyTransition(selection, g) {
 }
 
 },{"./lodash":21}],28:[function(require,module,exports){
-module.exports = "0.6.4";
+module.exports = "0.6.5-pre";
 
 },{}]},{},[1])(1)
 });
