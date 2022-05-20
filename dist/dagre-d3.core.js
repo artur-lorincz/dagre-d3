@@ -981,7 +981,7 @@ function render() {
     console.log('node creation done...');
 
 
-    time("layout", ()=>layout(g));
+    time("layout", ()=>layout(g, opts));
 
     time("positioning nodes", () => positionNodes(nodes, g));
     time("positioning, edge labels", () => positionEdgeLabels(edgeLabels, g));
